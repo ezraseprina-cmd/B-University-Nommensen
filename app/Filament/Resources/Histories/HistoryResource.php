@@ -5,17 +5,16 @@ namespace App\Filament\Resources\Histories;
 use App\Filament\Resources\Histories\Pages\CreateHistory;
 use App\Filament\Resources\Histories\Pages\EditHistory;
 use App\Filament\Resources\Histories\Pages\ListHistories;
-use App\Filament\Resources\Histories\Schemas\HistoryForm;
 use App\Filament\Resources\Histories\Tables\HistoriesTable;
 use App\Models\History;
 use BackedEnum;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\RichEditor;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use UnitEnum;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\FileUpload;
 
 class HistoryResource extends Resource
 {
@@ -28,22 +27,52 @@ class HistoryResource extends Resource
     protected static string|UnitEnum|null $navigationGroup = 'Profil Universitas';
     protected static ?int $navigationSort = 2;
 
-    protected static ?string $recordTitleAttribute = 'History';
+    protected static ?string $recordTitleAttribute = 'content';
 
     public static function form(Schema $schema): Schema
     {
         return $schema
             ->components([
-                Textarea::make('content')
+                RichEditor::make('content')
+                    ->label('Isi Sejarah')
+                    ->json(false)
+                    ->toolbarButtons([
+                        'bold',
+                        'italic',
+                        'underline',
+                        'bulletList',
+                        'orderedList',
+                        'link',
+                        'h3',
+                    ])
                     ->required()
+                    ->helperText('Ceritakan sejarah pendirian dan perkembangan universitas.')
                     ->columnSpanFull(),
+
                 FileUpload::make('image')
+                    ->label('Foto Bersejarah')
                     ->image()
                     ->disk('public')
+                    ->directory('histories')
                     ->visibility('public')
-                    ->directory('sejarah')
-                    ->required(),
+                    ->imagePreviewHeight('200')
+                    ->maxSize(2048)
+                    ->required()
+                    ->helperText('Foto gedung lama / momen bersejarah. Format: JPG, PNG. Maks 2MB.')
+                    ->columnSpanFull(),
             ]);
+    }
+
+    public static function table(Table $table): Table
+    {
+        return HistoriesTable::table($table);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            //
+        ];
     }
 
     public static function getPages(): array
