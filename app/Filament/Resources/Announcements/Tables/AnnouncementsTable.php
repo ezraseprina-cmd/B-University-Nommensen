@@ -2,44 +2,70 @@
 
 namespace App\Filament\Resources\Announcements\Tables;
 
+use Filament\Tables\Table;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\DeleteAction;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Table;
+use Illuminate\Support\Str;
 
 class AnnouncementsTable
 {
-    public static function configure(Table $table): Table
+    public static function table(Table $table): Table
     {
         return $table
             ->columns([
                 TextColumn::make('title')
-                    ->searchable(),
-                TextColumn::make('users_id')
-                    ->numeric()
+                    ->label('Judul')
+                    ->searchable()
+                    ->sortable()
+                    ->weight('bold')
+                    ->limit(50)
+                    ->tooltip(fn (?string $state) => $state),
+
+                TextColumn::make('content')
+                    ->label('Cuplikan')
+                    ->formatStateUsing(
+                        fn (?string $state) =>
+                        Str::limit(strip_tags($state ?? ''), 60)
+                    )
+                    ->wrap(),
+
+                TextColumn::make('user.name')
+                    ->label('Dibuat Oleh')
+                    ->badge()
+                    ->color('info')
                     ->sortable(),
+
                 TextColumn::make('slug')
-                    ->searchable(),
+                    ->label('Slug')
+                    ->searchable()
+                    ->copyable()
+                    ->copyMessage('Slug disalin!')
+                    ->limit(35),
+
                 TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->label('Diterbitkan')
+                    ->dateTime('d M Y H:i')
+                    ->sortable(),
             ])
+
             ->filters([
                 //
             ])
-            ->recordActions([
+
+            ->actions([
                 EditAction::make(),
+                DeleteAction::make(),
             ])
-            ->toolbarActions([
+
+            ->bulkActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+
+            ->defaultSort('created_at', 'desc');
     }
 }

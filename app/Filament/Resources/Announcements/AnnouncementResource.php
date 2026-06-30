@@ -8,12 +8,13 @@ use App\Filament\Resources\Announcements\Pages\ListAnnouncements;
 use App\Filament\Resources\Announcements\Tables\AnnouncementsTable;
 use App\Models\Announcement;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\FileUpload;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\Hidden;
 use UnitEnum;
 
 class AnnouncementResource extends Resource
@@ -29,27 +30,39 @@ class AnnouncementResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'Announcement';
 
-    public static function form(Schema $schema): Schema
-    {
-        return $schema
-            ->components([
-                TextInput::make('title')
-                    ->required(),
-                TextInput::make('content')
-                    ->required()
-                    ->columnSpanFull(),
-                TextInput::make('users_id')
-                    ->required()
-                    ->numeric(),
-                TextInput::make('slug')
-                    ->required(),
-            ])
-            ->columns(1); 
-    }
+    public static function form(Schema $Schema): Schema
+{
+    return $Schema
+        ->schema([
+            TextInput::make('title')
+                ->label('Judul Pengumuman')
+                ->required()
+                ->maxLength(255)
+                ->placeholder('contoh: Jadwal UAS Semester Ganjil 2025/2026')
+                ->helperText('Slug URL akan dibuat otomatis dari judul ini.')
+                ->columnSpanFull(),
+
+            RichEditor::make('content')
+                ->label('Isi Pengumuman')
+                ->toolbarButtons([
+                    'bold',
+                    'italic',
+                    'underline',
+                    'bulletList',
+                    'orderedList',
+                    'link',
+                ])
+                ->required()
+                ->columnSpanFull(),
+
+            Hidden::make('slug'),
+            Hidden::make('users_id'),
+        ]);
+}
 
     public static function table(Table $table): Table
     {
-        return AnnouncementsTable::configure($table);
+        return AnnouncementsTable::table($table);
     }
 
     public static function getRelations(): array
