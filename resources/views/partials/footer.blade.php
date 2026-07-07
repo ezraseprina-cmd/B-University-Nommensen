@@ -64,4 +64,4 @@
             © {{ date('Y') }} B University. Seluruh hak cipta dilindungi.
         </div>
     </div>
-</footer>
+</footer> 

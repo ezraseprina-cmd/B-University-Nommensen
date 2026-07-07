@@ -65,4 +65,4 @@
             © <?php echo e(date('Y')); ?> B University. Seluruh hak cipta dilindungi.
         </div>
     </div>
-</footer><?php /**PATH C:\Users\batar\Herd\nommensen\resources\views/partials/footer.blade.php ENDPATH**/ ?>
+</footer> <?php /**PATH C:\Users\batar\Herd\nommensen\resources\views/partials/footer.blade.php ENDPATH**/ ?>
